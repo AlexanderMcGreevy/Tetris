@@ -1,9 +1,17 @@
+import javax.swing.*;
+import java.awt.*;
 import java.util.Random;
 
 public class TetrisLay {
     private TetrisView view;
     private Piece currentPiece;
     private Random random = new Random();
+    private JPanel panel1;
+    private JPanel menu;
+    private JPanel board;
+    private JPanel game;
+    private JPanel previewPiece;
+    private JButton startBtn;
 
     public void setView(TetrisView view) {
         this.view = view;
@@ -14,17 +22,40 @@ public class TetrisLay {
     }
 
     public void newPiece() {
-        currentPiece = new Piece(random.nextInt(7)); // Assuming 7 different pieces
+        currentPiece = new Piece(random.nextInt(7)); // Random 7  pieces
         view.repaint();
     }
 
     public static void main(String[] args) {
-        TetrisView view = new TetrisView();
+        JFrame frame = new JFrame("Tetris Game");
         TetrisLay lay = new TetrisLay();
-        view.setLay(lay);
+        lay.panel1 = new JPanel();
+        lay.panel1.setLayout(new CardLayout());
+        lay.menu = new JPanel();
+        lay.board = new JPanel();
+        lay.game = new JPanel();
+        lay.previewPiece = new JPanel();
+        lay.startBtn = new JButton("Start");
+
+        lay.panel1.add(lay.menu, "Menu");
+        lay.panel1.add(lay.board, "Board");
+        lay.board.setLayout(new BorderLayout());
+        lay.board.add(lay.game, BorderLayout.CENTER);
+        lay.board.add(lay.previewPiece, BorderLayout.EAST);
+
+        TetrisView view = new TetrisView();
         lay.setView(view);
+        view.setLay(lay);
+        lay.game.setLayout(new BorderLayout());
+        lay.game.add(view, BorderLayout.CENTER);
+
         lay.newPiece(); // Initialize the first piece
-        view.setVisible(true);
+
+        frame.setContentPane(lay.panel1);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(400, 800);
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
     }
 
     public void moveLeft() {
@@ -99,6 +130,8 @@ public class TetrisLay {
         view.repaint();
     }
 
+
+
     public void setVisible(boolean b) {
         // TODO method stub
     }
@@ -108,6 +141,4 @@ public class TetrisLay {
             view.repaint();
         }
     }
-
-
 }

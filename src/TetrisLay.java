@@ -15,13 +15,16 @@ public class TetrisLay {
 
 
 
-    private TetrisView view;
     private Piece currentPiece;
     private Random random = new Random();
     private static final int BOARD_WIDTH = 10;
     private static final int BOARD_HEIGHT = 20;
     private int[][] tetBoard = new int[BOARD_HEIGHT][BOARD_WIDTH];
-
+    
+    public int[][] getBoard() {
+        return tetBoard;
+    }
+    
     public void setView(TetrisView view) {
         this.view = view;
     }
@@ -105,6 +108,7 @@ public class TetrisLay {
         int[][] shape = currentPiece.getPiece();
         int x = currentPiece.getX();
         int y = currentPiece.getY();
+        int type = currentPiece.getType() +1;
 
         for (int row = 0; row < shape.length; row++) {
             for (int col = 0; col < shape[row].length; col++) {
@@ -114,4 +118,29 @@ public class TetrisLay {
             }
         }
     }
+    public void setScore(int score) {
+        Score.setText("Score: " + score);
+    }
+
+    public void setLevel(int level) {
+        Level.setText("Level: " + level);
+    }
+
+
+    public TetrisView getView() {
+        return view;
+    }
+
+
+    public void initGameView() {
+        view = new TetrisView();
+        view.setLay(this);         // so the view knows the game logic
+        setView(view);             // so the logic can call view.repaint()
+
+        game.setLayout(new BorderLayout());
+        game.add(view, BorderLayout.CENTER);
+        game.revalidate();
+        game.repaint();
+    }
+
 }

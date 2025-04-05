@@ -17,9 +17,36 @@ public class TetrisView extends JPanel {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         drawBoard(g);
+        drawSettledBlocks(g);
         drawPiece(g);
     }
 
+    private void drawSettledBlocks(Graphics g) {
+        int[][] board=lay.getBoard();
+        for (int y=0; y<board.length; y++) {
+            for (int x=0; x<board[0].length; x++) {
+                int val=board[y][x];
+                if (val!=0) {
+                    g.setColor(getColorForType(val-1));
+                    g.fillRect(x*BLOCK_SIZE, y*BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
+                }
+            }
+        }
+    }
+
+
+    private Color getColorForType(int type) {
+        switch (type) {
+            case 0: return Color.CYAN;    // I
+            case 1: return Color.YELLOW;  // O
+            case 2: return Color.MAGENTA; // T
+            case 3: return Color.ORANGE;  // L
+            case 4: return Color.BLUE;    // J
+            case 5: return Color.GREEN;   // S
+            case 6: return Color.RED;     // Z
+            default: return Color.GRAY;
+        }
+    }
     private void drawBoard(Graphics g) {
         g.setColor(Color.BLACK);
         for (int x = 0; x < COLS; x++) {

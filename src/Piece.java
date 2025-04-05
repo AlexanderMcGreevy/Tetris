@@ -1,84 +1,64 @@
 import java.awt.*;
+
 public class Piece {
     private int[][] shape;
     private int x, y;
     private int type;
     private int rotation;
 
-
     private static final int[][][] pieces = {
-            {{1, 1, 1, 1}}, // I piece
-            {{1, 1, 1}, {0, 1, 0}}, // T piece
-            {{1, 1}, {1, 1}}, // O piece
-            {{1, 1, 0}, {0, 1, 1}}, // S piece
-            {{0, 1, 1}, {1, 1, 0}}, // Z piece
-            {{1, 1, 1}, {1, 0, 0}}, // L piece
-            {{1, 1, 1}, {0, 0, 1}} // J piece
+            {{1, 1, 1, 1}},                 // I
+            {{1, 1, 1}, {0, 1, 0}},         // T
+            {{1, 1}, {1, 1}},               // O
+            {{1, 1, 0}, {0, 1, 1}},         // S
+            {{0, 1, 1}, {1, 1, 0}},         // Z
+            {{1, 1, 1}, {1, 0, 0}},         // L
+            {{1, 1, 1}, {0, 0, 1}}          // J
     };
 
     public Piece(int type) {
         this.type = type;
         this.rotation = 0;
         this.shape = pieces[type];
-        this.x = 3; // Starting x position
-        this.y = 0; // Starting y position
+        this.x = 3;
+        this.y = 0;
     }
-
-
 
     public int[][] getPiece() {
         return shape;
     }
 
-    public int getX() {
-        return x;
-    }
+    public int getX() { return x; }
+    public int getY() { return y; }
+    public int getType() { return type; }
+    public int getRotation() { return rotation; }
 
-    public int getY() {
-        return y;
-    }
-
-    public int getType() {
-        return type;
-    }
-
-    public int getRotation() {
-        return rotation;
-    }
-
-    public void moveLeft() {
-        x--;
-    }
-
-    public void moveRight() {
-        x++;
-    }
-
-    public void moveDown() {
-        y++;
-    }
+    public void moveLeft() { x--; }
+    public void moveRight() { x++; }
+    public void moveDown() { y++; }
 
     public void rotate() {
-        rotation = (rotation + 1) % pieces[type].length;
-        shape = pieces[type];
+        shape = rotateMatrix(shape);
     }
 
-    public void unrotate() {
-        rotation = (rotation + pieces[type].length - 1) % pieces[type].length;
-        shape = pieces[type];
+    private int[][] rotateMatrix(int[][] matrix) {
+        int row = matrix.length;
+        int col = matrix[0].length;
+        int[][] result = new int[col][row];
+        for (int i = 0; i < row; i++) {
+            for (int j = 0; j < col; j++) {
+                result[j][row - 1 - i] = matrix[i][j];
+            }
+        }
+        return result;
     }
 
-    public void setX(int x) {
-        this.x = x;
-    }
-
-    public void setY(int y) {
-        this.y = y;
-    }
+    public void setX(int x) { this.x = x; }
+    public void setY(int y) { this.y = y; }
 
     public void setRotation(int rotation) {
         this.rotation = rotation;
-        shape = pieces[type];
+        shape = pieces[type]; // No actual rotation variant yet
     }
 
     public void setType(int type) {
@@ -89,6 +69,22 @@ public class Piece {
     public void setPiece(int[][] piece) {
         this.shape = piece;
     }
+    private int[][] rotateMatrixCounterClockwise(int[][] matrix) {
+        int row = matrix.length;
+        int col = matrix[0].length;
+        int[][] result = new int[col][row];
+        for (int i = 0; i < row; i++) {
+            for (int j = 0; j < col; j++) {
+                result[col - 1 - j][i] = matrix[i][j];
+            }
+        }
+        return result;
+    }
+
+    public void rotateBack() {
+        shape = rotateMatrixCounterClockwise(shape);
+    }
+
 
     public void setPiece(int type, int rotation) {
         this.type = type;
@@ -97,18 +93,15 @@ public class Piece {
     }
 
     public Color getColor() {
-        switch (type) {
-            case 0: return Color.CYAN;   // I
-            case 1: return Color.YELLOW; // O
-            case 2: return Color.MAGENTA;// T
-            case 3: return Color.ORANGE; // L
-            case 4: return Color.BLUE;   // J
-            case 5: return Color.GREEN;  // S
-            case 6: return Color.RED;    // Z
-            default: return Color.GRAY;
-        }
+        return switch (type) {
+            case 0 -> Color.CYAN;
+            case 1 -> Color.YELLOW;
+            case 2 -> Color.MAGENTA;
+            case 3 -> Color.ORANGE;
+            case 4 -> Color.BLUE;
+            case 5 -> Color.GREEN;
+            case 6 -> Color.RED;
+            default -> Color.GRAY;
+        };
     }
-
-
-
 }

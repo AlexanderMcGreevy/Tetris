@@ -1,6 +1,5 @@
 import javax.swing.JPanel;
-import java.awt.Graphics;
-import java.awt.Color;
+import java.awt.*;
 
 public class TetrisView extends JPanel {
     private TetrisLay lay;
@@ -26,9 +25,13 @@ public class TetrisView extends JPanel {
         for (int y=0; y<board.length; y++) {
             for (int x=0; x<board[0].length; x++) {
                 int val=board[y][x];
-                if (val!=0) {
+                if (val>0) {
                     g.setColor(getColorForType(val-1));
                     g.fillRect(x*BLOCK_SIZE, y*BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
+
+                    // Add a black border around the block
+                    g.setColor(Color.BLACK);
+                    g.drawRect(x * BLOCK_SIZE, y * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
                 }
             }
         }
@@ -47,6 +50,7 @@ public class TetrisView extends JPanel {
             default: return Color.GRAY;
         }
     }
+
     private void drawBoard(Graphics g) {
         g.setColor(Color.BLACK);
         for (int x = 0; x < COLS; x++) {
@@ -63,25 +67,39 @@ public class TetrisView extends JPanel {
             int[][] shape = piece.getPiece();
             int x = piece.getX();
             int y = piece.getY();
-            g.setColor(piece.getColor());
+            Color color = piece.getColor();
             for (int i = 0; i < shape.length; i++) {
                 for (int j = 0; j < shape[i].length; j++) {
                     if (shape[i][j] != 0) {
-                        g.fillRect((x + j) * 30, (y + i) * 30, 30, 30);
+                        int px = (x + j) * BLOCK_SIZE;
+                        int py = (y + i) * BLOCK_SIZE;
+
+                        g.setColor(color);
+                        g.fillRect(px, py, BLOCK_SIZE, BLOCK_SIZE);
+
+                        g.setColor(Color.BLACK);
+                        g.drawRect(px, py, BLOCK_SIZE, BLOCK_SIZE);
                     }
                 }
             }
         }
     }
+
+
     public void repaint() {
         super.repaint();
     }
 
 
     @Override
-    public java.awt.Dimension getPreferredSize() {
+    public Dimension getPreferredSize() {
         return new java.awt.Dimension(COLS * BLOCK_SIZE, ROWS * BLOCK_SIZE);
     }
+    @Override
+    public Dimension getMinimumSize() {
+        return new Dimension(COLS * BLOCK_SIZE, ROWS * BLOCK_SIZE);
+    }
+
 
 }
 

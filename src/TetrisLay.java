@@ -3,15 +3,24 @@ import java.awt.*;
 import java.util.Random;
 
 public class TetrisLay {
-    private TetrisView view;
-    private Piece currentPiece;
-    private Random random = new Random();
-    private JPanel panel1;
-    private JPanel menu;
+    public JPanel panel1;          // must be public or have a getter
     private JPanel board;
     private JPanel game;
     private JPanel previewPiece;
+    private JPanel menu;
     private JButton startBtn;
+    private JLabel Score;
+    private JLabel Level;
+    private TetrisView view;
+
+
+
+    private TetrisView view;
+    private Piece currentPiece;
+    private Random random = new Random();
+    private static final int BOARD_WIDTH = 10;
+    private static final int BOARD_HEIGHT = 20;
+    private int[][] tetBoard = new int[BOARD_HEIGHT][BOARD_WIDTH];
 
     public void setView(TetrisView view) {
         this.view = view;
@@ -22,123 +31,87 @@ public class TetrisLay {
     }
 
     public void newPiece() {
-        currentPiece = new Piece(random.nextInt(7)); // Random 7  pieces
+        currentPiece = new Piece(random.nextInt(7)); // Random 7 pieces
         view.repaint();
-    }
-
-    public static void main(String[] args) {
-        JFrame frame = new JFrame("Tetris Game");
-        TetrisLay lay = new TetrisLay();
-        lay.panel1 = new JPanel();
-        lay.panel1.setLayout(new CardLayout());
-        lay.menu = new JPanel();
-        lay.board = new JPanel();
-        lay.game = new JPanel();
-        lay.previewPiece = new JPanel();
-        lay.startBtn = new JButton("Start");
-
-        lay.panel1.add(lay.menu, "Menu");
-        lay.panel1.add(lay.board, "Board");
-        lay.board.setLayout(new BorderLayout());
-        lay.board.add(lay.game, BorderLayout.CENTER);
-        lay.board.add(lay.previewPiece, BorderLayout.EAST);
-
-        TetrisView view = new TetrisView();
-        lay.setView(view);
-        view.setLay(lay);
-        lay.game.setLayout(new BorderLayout());
-        lay.game.add(view, BorderLayout.CENTER);
-
-        lay.newPiece(); // Initialize the first piece
-
-        frame.setContentPane(lay.panel1);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(400, 800);
-        frame.setLocationRelativeTo(null);
-        frame.setVisible(true);
     }
 
     public void moveLeft() {
-        view.repaint();
+        if (canMove(currentPiece, -1, 0)) {
+            currentPiece.moveLeft();
+            view.repaint();
+        }
     }
 
     public void moveRight() {
-        view.repaint();
+        if (canMove(currentPiece, 1, 0)) {
+            currentPiece.moveRight();
+            view.repaint();
+        }
     }
 
     public void moveDown() {
-        view.repaint();
+        if (canMove(currentPiece, 0, 1)) {
+            currentPiece.moveDown();
+            view.repaint();
+        } else {
+            placePiece();
+            newPiece();
+        }
     }
 
     public void rotate() {
+        currentPiece.rotate();
+        if (!canMove(currentPiece, 0, 0)) {
+            currentPiece.unrotate();
+        }
         view.repaint();
     }
 
     public void drop() {
+        while (canMove(currentPiece, 0, 1)) {
+            currentPiece.moveDown();
+        }
+        placePiece();
+        newPiece();
         view.repaint();
     }
 
-    public void clearLines() {
-        view.repaint();
+    private boolean canMove(Piece piece, int dx, int dy) {
+        int[][] shape = piece.getPiece();
+        int newX = piece.getX() + dx;
+        int newY = piece.getY() + dy;
+        for (int row = 0; row < shape.length; row++) {
+            for (int col = 0; col < shape[row].length; col++) {
+                if (shape[row][col] != 0) {
+                    int boardX = newX + col;
+                    int boardY = newY + row;
+
+                    // Check if the new position is out of bounds
+                    if (boardX < 0 || boardX >= BOARD_WIDTH || boardY < 0 || boardY >= BOARD_HEIGHT) {
+                        return false;
+                    }
+
+                    // Check if the new position collides with existing pieces
+                    if (tetBoard[boardY][boardX] != 0) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
     }
 
-    public void gameOver() {
-        view.repaint();
-    }
+    private void placePiece() {
+        int[][] shape = currentPiece.getPiece();
+        int x = currentPiece.getX();
+        int y = currentPiece.getY();
 
-    public void pause() {
-        view.repaint();
-    }
-
-    public void resume() {
-        view.repaint();
-    }
-
-    public void start() {
-        view.repaint();
-    }
-
-    public void stop() {
-        view.repaint();
-    }
-
-    public void setLevel(int level) {
-        view.repaint();
-    }
-
-    public void setScore(int score) {
-        view.repaint();
-    }
-
-    public void setLines(int lines) {
-        view.repaint();
-    }
-
-    public void setNextPiece(int[][] piece) {
-        view.repaint();
-    }
-
-    public void setHoldPiece(int[][] piece) {
-        view.repaint();
-    }
-
-    public void setPiece(int[][] piece, int x, int y) {
-        view.repaint();
-    }
-
-    public void setGameOver(boolean b) {
-        view.repaint();
-    }
-
-
-
-    public void setVisible(boolean b) {
-        // TODO method stub
-    }
-
-    public void repaint() {
-        if (view != null) {
-            view.repaint();
+        for (int row = 0; row < shape.length; row++) {
+            for (int col = 0; col < shape[row].length; col++) {
+                if (shape[row][col] != 0) {
+                    tetBoard[y + row][x + col] = shape[row][col];
+                }
+            }
         }
     }
 }

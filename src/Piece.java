@@ -1,8 +1,11 @@
+import java.awt.*;
 public class Piece {
     private int[][] shape;
     private int x, y;
     private int type;
     private int rotation;
+
+
     private static final int[][][] pieces = {
             {{1, 1, 1, 1}}, // I piece
             {{1, 1, 1}, {0, 1, 0}}, // T piece
@@ -20,6 +23,8 @@ public class Piece {
         this.x = 3; // Starting x position
         this.y = 0; // Starting y position
     }
+
+
 
     public int[][] getPiece() {
         return shape;
@@ -90,4 +95,20 @@ public class Piece {
         this.rotation = rotation;
         this.shape = pieces[type];
     }
+
+    public Color getColor() {
+        switch (type) {
+            case 0: return Color.CYAN;   // I
+            case 1: return Color.YELLOW; // O
+            case 2: return Color.MAGENTA;// T
+            case 3: return Color.ORANGE; // L
+            case 4: return Color.BLUE;   // J
+            case 5: return Color.GREEN;  // S
+            case 6: return Color.RED;    // Z
+            default: return Color.GRAY;
+        }
+    }
+
+
+
 }

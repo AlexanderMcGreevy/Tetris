@@ -4,6 +4,10 @@ import java.awt.Color;
 
 public class TetrisView extends JPanel {
     private TetrisLay lay;
+    private final int BLOCK_SIZE = 30;
+    private final int COLS = 10;
+    private final int ROWS = 20;
+
 
     public void setLay(TetrisLay lay) {
         this.lay = lay;
@@ -18,12 +22,13 @@ public class TetrisView extends JPanel {
 
     private void drawBoard(Graphics g) {
         g.setColor(Color.BLACK);
-        for (int x = 0; x < getWidth(); x += 30) {
-            for (int y = 0; y < getHeight(); y += 30) {
-                g.drawRect(x, y, 30, 30);
+        for (int x = 0; x < COLS; x++) {
+            for (int y = 0; y < ROWS; y++) {
+                g.drawRect(x * BLOCK_SIZE, y * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
             }
         }
     }
+
 
     private void drawPiece(Graphics g) {
         Piece piece = lay.getCurrentPiece();
@@ -31,7 +36,7 @@ public class TetrisView extends JPanel {
             int[][] shape = piece.getPiece();
             int x = piece.getX();
             int y = piece.getY();
-            g.setColor(Color.RED);
+            g.setColor(piece.getColor());
             for (int i = 0; i < shape.length; i++) {
                 for (int j = 0; j < shape[i].length; j++) {
                     if (shape[i][j] != 0) {
@@ -44,6 +49,13 @@ public class TetrisView extends JPanel {
     public void repaint() {
         super.repaint();
     }
+
+
+    @Override
+    public java.awt.Dimension getPreferredSize() {
+        return new java.awt.Dimension(COLS * BLOCK_SIZE, ROWS * BLOCK_SIZE);
+    }
+
 }
 
 

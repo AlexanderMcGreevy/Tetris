@@ -52,6 +52,31 @@ public class TetrisLay {
         preview.repaint();
     }
 
+    private void clearFullRows() {
+        for (int y = BOARD_HEIGHT - 1; y >= 0; y--) {
+            boolean fullRow = true;
+            for (int x = 0; x < BOARD_WIDTH; x++) {
+                if (tetBoard[y][x] == 0) {
+                    fullRow = false;
+                    break;
+                }
+            }
+
+            if (fullRow) {
+                // Move all rows above this one down
+                for (int row = y; row > 0; row--) {
+                    System.arraycopy(tetBoard[row - 1], 0, tetBoard[row], 0, BOARD_WIDTH);
+                }
+
+                // Clear the top row
+                for (int col = 0; col < BOARD_WIDTH; col++) {
+                    tetBoard[0][col] = 0;
+                }
+
+                y++; // Check same row again since it was shifted down
+            }
+        }
+    }
 
 
     public void moveLeft() {
@@ -127,10 +152,6 @@ public class TetrisLay {
         }
     }
 
-
-
-
-
     private boolean canMove(Piece piece, int dx, int dy) {
         int[][] shape = piece.getPiece();
         int newX = piece.getX() + dx;
@@ -169,6 +190,7 @@ public class TetrisLay {
                 }
             }
         }
+        clearFullRows();
     }
     public void setScore(int score) {
         Score.setText("Score: " + score);

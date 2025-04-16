@@ -1,5 +1,8 @@
 import javax.swing.*;
 import java.awt.*;
+import java.io.*;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 public class TetrisLay {
@@ -11,6 +14,8 @@ public class TetrisLay {
     private JButton startBtn;
     private JLabel Score;
     private JLabel Level;
+    private JLabel highScore;
+    private JLabel highScoreVal;
     private TetrisView view;
     private PreviewView preview;
     private Random random = new Random();
@@ -20,6 +25,14 @@ public class TetrisLay {
     private static final int BOARD_HEIGHT = 20;
     private int[][] tetBoard = new int[BOARD_HEIGHT][BOARD_WIDTH];
     private Timer gameTimer;
+    private int score = 0;
+    private int level = 0;
+    private int linesClearedTotal = 0;
+    private int highScoreValue = 0;
+    private Map<String, Integer> leaderboard = new HashMap<>();
+    private final String leaderboardFile = "leaderboard.ser";
+
+
 
 
     public int[][] getBoard() {
@@ -53,6 +66,7 @@ public class TetrisLay {
     }
 
     private void clearFullRows() {
+        int rowsCleared = 0;
         for (int y = BOARD_HEIGHT - 1; y >= 0; y--) {
             boolean fullRow = true;
             for (int x = 0; x < BOARD_WIDTH; x++) {
@@ -63,6 +77,7 @@ public class TetrisLay {
             }
 
             if (fullRow) {
+                rowsCleared++;
                 // Move all rows above this one down
                 for (int row = y; row > 0; row--) {
                     System.arraycopy(tetBoard[row - 1], 0, tetBoard[row], 0, BOARD_WIDTH);
@@ -75,6 +90,28 @@ public class TetrisLay {
 
                 y++; // Check same row again since it was shifted down
             }
+        }
+        if (rowsCleared>0) {
+            linesClearedTotal += rowsCleared;
+
+            int oldLevel = level;
+            level = linesClearedTotal / 2;
+
+            // Update game speed if level increased
+            if (level > oldLevel && gameTimer != null) {
+                gameTimer.setDelay(Math.max(100, 500 - (level * 50)));
+            }
+
+            int points=switch (rowsCleared) {
+                case 1 -> 40 * (level + 1);
+                case 2 -> 100 * (level + 1);
+                case 3 -> 300 * (level + 1);
+                case 4 -> 1200 * (level + 1);
+                default -> 0;
+            };
+            score+=points;
+            setScore(score);
+            setLevel(level);
         }
     }
 
@@ -137,6 +174,11 @@ public class TetrisLay {
         if (gameTimer != null) {
             gameTimer.stop();
         }
+        score = 0;
+        setScore(score);
+
+
+
 
         gameTimer = new Timer(500, e -> moveDown());
         gameTimer.start();
@@ -213,7 +255,35 @@ public class TetrisLay {
         if (gameTimer != null) {
             gameTimer.stop();
         }
+
+        // Update high score if needed
+        if (score > highScoreValue) {
+            highScoreValue = score;
+        }
+
+        String name = JOptionPane.showInputDialog(null, "Game Over!\nYour Score: " + score + "\nHigh Score: " + highScoreValue + "\n\nEnter your name:");
+        if (name != null && !name.isEmpty()) {
+            TetrisSocketClient.sendScore(name, score);
+        }
+
+        // Ask if they want to start a new game
+        int option = JOptionPane.showConfirmDialog(null,
+                "Play again?",
+                "New Game",
+                JOptionPane.YES_NO_OPTION);
+
+        if (option == JOptionPane.YES_OPTION) {
+            startGame(); // restart the game
+        } else {
+            System.exit(0); // close app
+        }
+        leaderboard.put(name, score);
+        saveLeaderboard();
+
     }
+
+
+
 
 
 
@@ -234,6 +304,42 @@ public class TetrisLay {
         game.repaint();
         previewPiece.revalidate();
         previewPiece.repaint();
+        loadLeaderboard();
+
+    }
+
+    public void showStartDialog() {
+        int option = JOptionPane.showConfirmDialog(null,
+                "Welcome to Tetris!\n\nWould you like to start the game?",
+                "Start Game",
+                JOptionPane.YES_NO_OPTION);
+
+        if (option == JOptionPane.YES_OPTION) {
+            startGame();
+        } else {
+            System.exit(0); // Quit if they say no
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public void loadLeaderboard() {
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(leaderboardFile))) {
+            leaderboard = (Map<String, Integer>) in.readObject();
+            System.out.println("Leaderboard loaded.");
+        } catch (FileNotFoundException e) {
+            System.out.println("No leaderboard file found. Starting fresh.");
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void saveLeaderboard() {
+        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(leaderboardFile))) {
+            out.writeObject(leaderboard);
+            System.out.println("Leaderboard saved.");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 

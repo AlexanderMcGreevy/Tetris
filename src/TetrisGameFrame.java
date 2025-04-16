@@ -9,40 +9,31 @@ public class TetrisGameFrame extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         TetrisLay lay = new TetrisLay();
-        lay.initGameView();     // adds TetrisView inside the game panel
-        lay.startGame();
+        lay.initGameView();     // prepares game + board panel
 
-        setContentPane(lay.panel1);  // show the full form layout
-        pack();  // Sizes window based on preferred sizes (like 300x600 for game board)
+        setContentPane(lay.panel1);  // initially show the menu panel
+        pack();
 
-        // Set a minimum size so users can’t shrink it too small
-        setMinimumSize(new Dimension(400, 650)); // Adjust as needed for side panel/labels
+        setMinimumSize(new Dimension(400, 650));
+        setLocationRelativeTo(null);
 
-        setLocationRelativeTo(null);  // Center on screen
-
+        // Keep key listeners active (will apply to the whole window)
         addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
                 switch (e.getKeyCode()) {
-                    case KeyEvent.VK_LEFT:
-                        lay.moveLeft();
-                        break;
-                    case KeyEvent.VK_RIGHT:
-                        lay.moveRight();
-                        break;
-                    case KeyEvent.VK_DOWN:
-                        lay.moveDown();
-                        break;
-                    case KeyEvent.VK_UP:
-                        lay.rotate();
-                        break;
-                    case KeyEvent.VK_SPACE:
-                        lay.drop();
-                        break;
+                    case KeyEvent.VK_LEFT -> lay.moveLeft();
+                    case KeyEvent.VK_RIGHT -> lay.moveRight();
+                    case KeyEvent.VK_DOWN -> lay.moveDown();
+                    case KeyEvent.VK_UP -> lay.rotate();
+                    case KeyEvent.VK_SPACE -> lay.drop();
                 }
             }
         });
 
         setFocusable(true);
+
+        // creates start game view
+        SwingUtilities.invokeLater(lay::showStartDialog);
     }
 }

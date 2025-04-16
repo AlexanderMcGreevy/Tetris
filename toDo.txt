@@ -1,5 +1,5 @@
-//add a way to check if the game is over
-//add a way to check if a row is full
+//add a way to check if the game is over  x
+//add a way to check if a row is full     x
 //add a way to remove a full row/multiple
 //add levels/multiplier for speed with cap
 

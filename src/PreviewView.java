@@ -1,6 +1,6 @@
 import javax.swing.*;
 import java.awt.*;
-
+//this class creates teh preview view of the next piece that will appear
 public class PreviewView extends JPanel {
     private TetrisLay lay;
     private final int BLOCK_SIZE = 20; // smaller than main board
@@ -14,7 +14,7 @@ public class PreviewView extends JPanel {
         super.paintComponent(g);
         drawPreview(g);
     }
-
+//draws the preview of the next piece
     private void drawPreview(Graphics g) {
         if (lay == null || lay.getNextPiece() == null) return;
 

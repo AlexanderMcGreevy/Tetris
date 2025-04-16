@@ -65,6 +65,7 @@ public class TetrisLay {
         preview.repaint();
     }
 
+    //clears a row if its filled
     private void clearFullRows() {
         int rowsCleared = 0;
         for (int y = BOARD_HEIGHT - 1; y >= 0; y--) {
@@ -78,7 +79,7 @@ public class TetrisLay {
 
             if (fullRow) {
                 rowsCleared++;
-                // Move all rows above this one down
+                //move all rows above this one down
                 for (int row = y; row > 0; row--) {
                     System.arraycopy(tetBoard[row - 1], 0, tetBoard[row], 0, BOARD_WIDTH);
                 }
@@ -88,7 +89,7 @@ public class TetrisLay {
                     tetBoard[0][col] = 0;
                 }
 
-                y++; // Check same row again since it was shifted down
+                y++; //check same row again since it was shifted down
             }
         }
         if (rowsCleared>0) {
@@ -97,7 +98,7 @@ public class TetrisLay {
             int oldLevel = level;
             level = linesClearedTotal / 2;
 
-            // Update game speed if level increased
+            //update game speed if level increased
             if (level > oldLevel && gameTimer != null) {
                 gameTimer.setDelay(Math.max(100, 500 - (level * 50)));
             }
@@ -115,21 +116,21 @@ public class TetrisLay {
         }
     }
 
-
+    //moves the piece to the left
     public void moveLeft() {
         if (canMove(currentPiece, -1, 0)) {
             currentPiece.moveLeft();
             view.repaint();
         }
     }
-
+    //moves the piece to the right
     public void moveRight() {
         if (canMove(currentPiece, 1, 0)) {
             currentPiece.moveRight();
             view.repaint();
         }
     }
-
+    //moves the piece down
     public void moveDown() {
         if (canMove(currentPiece, 0, 1)) {
             currentPiece.moveDown();
@@ -139,7 +140,7 @@ public class TetrisLay {
             newPiece();
         }
     }
-
+    //rotates the piece
     public void rotate() {
         currentPiece.rotate();
         if (!canMove(currentPiece, 0, 0)) {
@@ -159,7 +160,7 @@ public class TetrisLay {
         }
         view.repaint();
     }
-
+    //drops the piece to the bottom
     public void drop() {
         while (canMove(currentPiece, 0, 1)) {
             currentPiece.moveDown();
@@ -168,24 +169,28 @@ public class TetrisLay {
         newPiece();
         view.repaint();
     }
-
+    //starts the game
     public void startGame() {
-        resetBoard(); // clear everything
+        resetBoard(); //clear everything
         if (gameTimer != null) {
             gameTimer.stop();
         }
         score = 0;
         setScore(score);
-
+        score = 0;
+        level = 0;
+        linesClearedTotal = 0;
+        setScore(score);
+        setLevel(level);
 
 
 
         gameTimer = new Timer(500, e -> moveDown());
         gameTimer.start();
 
-        newPiece(); // Start the game with the first piece
+        newPiece(); //start the game with the first piece
     }
-
+    //restarts the tetris game
     public void resetBoard() {
         for (int y = 0; y < BOARD_HEIGHT; y++) {
             for (int x = 0; x < BOARD_WIDTH; x++) {
@@ -193,7 +198,7 @@ public class TetrisLay {
             }
         }
     }
-
+    //checks if the piece can move to a spot on the graph
     private boolean canMove(Piece piece, int dx, int dy) {
         int[][] shape = piece.getPiece();
         int newX = piece.getX() + dx;
@@ -261,30 +266,34 @@ public class TetrisLay {
             highScoreValue = score;
         }
 
-        String name = JOptionPane.showInputDialog(null, "Game Over!\nYour Score: " + score + "\nHigh Score: " + highScoreValue + "\n\nEnter your name:");
+        String name = JOptionPane.showInputDialog(null,
+                "Game Over!\nYour Score: " + score + "\nHigh Score: " + highScoreValue + "\n\nEnter your name:");
+
         if (name != null && !name.isEmpty()) {
+            leaderboard.put(name, score);   //  add to leaderboard
+            saveLeaderboard();              //  save to file
             TetrisSocketClient.sendScore(name, score);
         }
 
-        // Ask if they want to start a new game
-        int option = JOptionPane.showConfirmDialog(null,
-                "Play again?",
-                "New Game",
-                JOptionPane.YES_NO_OPTION);
+        Object[] options = {"Play Again", "View Leaderboard", "Exit"};
+        int option = JOptionPane.showOptionDialog(null,
+                "What would you like to do?",
+                "Game Over",
+                JOptionPane.DEFAULT_OPTION,
+                JOptionPane.INFORMATION_MESSAGE,
+                null,
+                options,
+                options[0]);
 
-        if (option == JOptionPane.YES_OPTION) {
-            startGame(); // restart the game
+        if (option == 0) {
+            startGame(); // restart game
+        } else if (option == 1) {
+            showLeaderboard(); //  open leaderboard frame
+            showStartDialog(); // optional: reopen main dialog
         } else {
-            System.exit(0); // close app
+            System.exit(0); // exit game
         }
-        leaderboard.put(name, score);
-        saveLeaderboard();
-
     }
-
-
-
-
 
 
     public void initGameView() {
@@ -309,18 +318,27 @@ public class TetrisLay {
     }
 
     public void showStartDialog() {
-        int option = JOptionPane.showConfirmDialog(null,
-                "Welcome to Tetris!\n\nWould you like to start the game?",
+        Object[] options = {"Start Game", "View Leaderboard", "Exit"};
+        int option = JOptionPane.showOptionDialog(null,
+                "Welcome to Tetris!\nChoose an option:",
                 "Start Game",
-                JOptionPane.YES_NO_OPTION);
+                JOptionPane.DEFAULT_OPTION,
+                JOptionPane.INFORMATION_MESSAGE,
+                null,
+                options,
+                options[0]);
 
-        if (option == JOptionPane.YES_OPTION) {
+        if (option == 0) {
             startGame();
+        } else if (option == 1) {
+            showLeaderboard(); // Shows the leaderboard
+            showStartDialog(); // reopen dialog after viewing
         } else {
-            System.exit(0); // Quit if they say no
+            System.exit(0);
         }
     }
 
+    //Data Persistence Stuff
     @SuppressWarnings("unchecked")
     public void loadLeaderboard() {
         try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(leaderboardFile))) {
@@ -332,7 +350,7 @@ public class TetrisLay {
             e.printStackTrace();
         }
     }
-
+    //Saves leaderboard busing the node stuff
     public void saveLeaderboard() {
         try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(leaderboardFile))) {
             out.writeObject(leaderboard);
@@ -341,6 +359,11 @@ public class TetrisLay {
             e.printStackTrace();
         }
     }
+
+    public void showLeaderboard() {
+        new LeaderboardFrame(leaderboard).setVisible(true);
+    }
+
 
 
 }

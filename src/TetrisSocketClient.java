@@ -2,6 +2,8 @@
 import java.io.*;
 import java.net.*;
 
+//this class creates the client for the socket connection and sends the score to the server
+//it also prints a message from the server that displays the status of the connection
 public class TetrisSocketClient {
 
     public static void sendScore(String name, int score) {

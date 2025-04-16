@@ -3,6 +3,7 @@ import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
+//this class creates the main game frame and initializes the game
 public class TetrisGameFrame extends JFrame {
     public TetrisGameFrame() {
         setTitle("Tetris Game");

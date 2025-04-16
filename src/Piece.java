@@ -1,5 +1,6 @@
 import java.awt.*;
 
+//this class creates the pieces of the game and includes their rotational functionality
 public class Piece {
     private int[][] shape;
     private int x, y;

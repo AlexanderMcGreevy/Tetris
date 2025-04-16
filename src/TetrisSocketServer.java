@@ -3,6 +3,9 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
+//this class creates the server for the socket connection and handles the leaderboard data
+//it also prints a message from the server that displays the status of the connection
+
 public class TetrisSocketServer {
 
     private static ServerSocket server;
@@ -22,7 +25,7 @@ public class TetrisSocketServer {
             ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
             ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
 
-            // Expecting "name:score"
+            // Takes info in the format of "name:score"
             String message = (String) ois.readObject();
             System.out.println("Message received: " + message);
 

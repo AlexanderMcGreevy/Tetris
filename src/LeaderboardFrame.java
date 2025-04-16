@@ -3,6 +3,7 @@ import java.awt.*;
 import java.util.*;
 import java.util.List;
 
+//this class creates the leaderboard view of the game and uses persistent data to save the names and scores between sessions
 public class LeaderboardFrame extends JFrame {
 
     public LeaderboardFrame(Map<String, Integer> scores) {

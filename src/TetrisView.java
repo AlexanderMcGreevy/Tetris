@@ -19,7 +19,7 @@ public class TetrisView extends JPanel {
         drawSettledBlocks(g);
         drawPiece(g);
     }
-
+// Draws and keeps track of the settled blocks on the bottom of the board
     private void drawSettledBlocks(Graphics g) {
         int[][] board=lay.getBoard();
         for (int y=0; y<board.length; y++) {
@@ -37,7 +37,7 @@ public class TetrisView extends JPanel {
         }
     }
 
-
+// Returns the color associated with each piece type
     private Color getColorForType(int type) {
         switch (type) {
             case 0: return Color.CYAN;    // I
@@ -51,6 +51,7 @@ public class TetrisView extends JPanel {
         }
     }
 
+    // Draws the grid lines for the Tetris board
     private void drawBoard(Graphics g) {
         g.setColor(Color.BLACK);
         for (int x = 0; x < COLS; x++) {
@@ -61,6 +62,7 @@ public class TetrisView extends JPanel {
     }
 
 
+    // Draws the current piece based on the tetris layout and directions
     private void drawPiece(Graphics g) {
         Piece piece = lay.getCurrentPiece();
         if (piece != null) {

@@ -295,7 +295,7 @@ public class TetrisLay {
         }
     }
 
-
+//Creates the game frame and sets the layout
     public void initGameView() {
         view = new TetrisView();
         preview = new PreviewView();
@@ -316,7 +316,7 @@ public class TetrisLay {
         loadLeaderboard();
 
     }
-
+//Creates the popup with the options to start the game, view the leaderboard, or exit
     public void showStartDialog() {
         Object[] options = {"Start Game", "View Leaderboard", "Exit"};
         int option = JOptionPane.showOptionDialog(null,

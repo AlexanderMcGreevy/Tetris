@@ -3,7 +3,7 @@ import java.awt.*;
 //this class creates teh preview view of the next piece that will appear
 public class PreviewView extends JPanel {
     private TetrisLay lay;
-    private final int BLOCK_SIZE = 20; // smaller than main board
+    private final int BLOCK_SIZE = 20; // smaller than main board so it takes up less space
 
     public void setLay(TetrisLay lay) {
         this.lay = lay;

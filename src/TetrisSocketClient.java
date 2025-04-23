@@ -23,7 +23,7 @@ public class TetrisSocketClient {
             socket.close();
 
         } catch (Exception e) {
-            e.printStackTrace();
+            e.printStackTrace(); //error handling
         }
     }
 

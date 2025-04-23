@@ -7,6 +7,7 @@ public class Piece {
     private int type;
     private int rotation;
 
+    //creates the base pieces the game can choose from
     private static final int[][][] pieces = {
             {{1, 1, 1, 1}},                 // I
             {{1, 1, 1}, {0, 1, 0}},         // T
@@ -82,6 +83,7 @@ public class Piece {
         return result;
     }
 
+    //undoes the rotation if the piece goes through a wall
     public void rotateBack() {
         shape = rotateMatrixCounterClockwise(shape);
     }
